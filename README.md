@@ -35,11 +35,19 @@ sudo apt install trash-cli
 
 ## Releasing
 
-1. Bump `version` in **both** `find-guard/package.json` and `trash-guard/package.json`
-2. Commit + push
-3. Tag and push: `git tag v<version> && git push origin v<version>`
-4. The `Publish` workflow runs tests and publishes both packages to npm
-   (uses the `NPM_TOKEN` repo secret)
+Tag it — that's the only version you write:
+
+```
+git tag v0.2.0 && git push origin v0.2.0
+```
+
+The `Publish` workflow sets each package's `version` from the tag, runs the
+tests, publishes both to npm (uses the `NPM_TOKEN` repo secret), and commits
+the version bumps back to `main`.
+
+Re-tagging the same version to re-run the workflow is fine — npm refuses to
+re-publish a version that's already out, so the publish step fails harmlessly
+if the version is unchanged on npm.
 
 ## Development
 

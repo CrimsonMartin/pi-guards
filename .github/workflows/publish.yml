@@ -9,7 +9,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -17,28 +17,42 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # needed for npm version + git tag verification
+          ref: ${{ github.ref_name }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
-      - name: Install
+      - name: Set version from tag
         working-directory: ${{ matrix.pkg }}
-        run: npm install --no-audit --no-fund
-      - name: Test
-        working-directory: ${{ matrix.pkg }}
-        run: npm test
-      - name: Verify tag matches package version
-        working-directory: ${{ matrix.pkg }}
+        env:
+          VER: ${{ github.ref_name }}
         run: |
-          PKG_VER=$(node -p "require('./package.json').version")
-          TAG_VER=${GITHUB_REF_NAME#v}
-          if [ "$PKG_VER" != "$TAG_VER" ]; then
-            echo "::error::package version $PKG_VER does not match tag v$TAG_VER"
-            exit 1
-          fi
+          VER=${VER#v}
+          node -e "
+            const fs = require('fs');
+            const p = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            p.version = process.env.VER;
+            fs.writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n');
+            console.log('version set to', process.env.VER);
+          "
+      - name: Install and test
+        working-directory: ${{ matrix.pkg }}
+        run: npm install --no-audit --no-fund && npm test
       - name: Publish
         working-directory: ${{ matrix.pkg }}
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Commit version back to main
+        working-directory: ${{ matrix.pkg }}
+        env:
+          VER: ${{ github.ref_name }}
+        run: |
+          VER=${VER#v}
+          if [ -n "$(git status --porcelain package.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package.json
+            git commit -m "chore: set ${GITHUB_JOB} version $VER from tag [skip ci]"
+            git push origin HEAD:main
+          fi
