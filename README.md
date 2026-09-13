@@ -1,5 +1,9 @@
 # pi-guards
 
+[![CI](https://github.com/CrimsonMartin/pi-guards/actions/workflows/ci.yml/badge.svg)](https://github.com/CrimsonMartin/pi-guards/actions/workflows/ci.yml)
+[![Secret Scan](https://github.com/CrimsonMartin/pi-guards/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/CrimsonMartin/pi-guards/actions/workflows/secret-scan.yml)
+[![Publish](https://github.com/CrimsonMartin/pi-guards/actions/workflows/publish.yml/badge.svg)](https://github.com/CrimsonMartin/pi-guards/actions/workflows/publish.yml)
+
 Safety extensions for [pi](https://pi.dev) that keep agents from doing slow
 or destructive things in the `bash` tool. Two independent packages:
 
@@ -28,6 +32,14 @@ sudo updatedb
 # trash-guard:
 sudo apt install trash-cli
 ```
+
+## Releasing
+
+1. Bump `version` in **both** `find-guard/package.json` and `trash-guard/package.json`
+2. Commit + push
+3. Tag and push: `git tag v<version> && git push origin v<version>`
+4. The `Publish` workflow runs tests and publishes both packages to npm
+   (uses the `NPM_TOKEN` repo secret)
 
 ## Development
 
