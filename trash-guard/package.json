@@ -1,0 +1,20 @@
+{
+  "name": "@crimsonmartin/pi-trash-guard",
+  "version": "0.1.0",
+  "description": "Pi extension: rewrite rm to trash-put (trash-cli) so agents never irreversibly delete; confirm for absolute paths",
+  "keywords": ["pi-package", "pi-extension", "trash-cli", "safety", "backup"],
+  "license": "MIT",
+  "type": "module",
+  "main": "index.ts",
+  "files": ["index.ts", "README.md"],
+  "scripts": {
+    "test": "tsx test/index.test.ts"
+  },
+  "pi": {
+    "extensions": ["./index.ts"]
+  },
+  "devDependencies": {
+    "jiti": "^2.6.0",
+    "tsx": "^4.19.0"
+  }
+}

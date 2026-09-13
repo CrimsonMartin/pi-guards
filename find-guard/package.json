@@ -1,0 +1,20 @@
+{
+  "name": "@crimsonmartin/pi-find-guard",
+  "version": "0.1.0",
+  "description": "Pi extension: block slow raw find/grep in the bash tool, point agents at locate/rg/fd",
+  "keywords": ["pi-package", "pi-extension", "ripgrep", "plocate", "safety"],
+  "license": "MIT",
+  "type": "module",
+  "main": "index.ts",
+  "files": ["index.ts", "README.md"],
+  "scripts": {
+    "test": "tsx test/index.test.ts"
+  },
+  "pi": {
+    "extensions": ["./index.ts"]
+  },
+  "devDependencies": {
+    "jiti": "^2.6.0",
+    "tsx": "^4.19.0"
+  }
+}
