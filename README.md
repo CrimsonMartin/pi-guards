@@ -42,8 +42,21 @@ git tag v0.2.0 && git push origin v0.2.0
 ```
 
 The `Publish` workflow sets each package's `version` from the tag, runs the
-tests, publishes both to npm (uses the `NPM_TOKEN` repo secret), and commits
-the version bumps back to `main`.
+tests, publishes both to npm via [trusted publishing (OIDC)](https://docs.npmjs.com/trusted-publishers/),
+and commits the version bumps back to `main`.
+
+**One-time OIDC setup** (on npmjs.com, once per package):
+Packages → *your-package* → Settings → **Trusted publishing** →
+*Add trusted publisher* → **GitHub Actions**, then:
+
+| Field | Value |
+|---|---|
+| Organization or user | `CrimsonMartin` |
+| Repository | `pi-guards` |
+| Workflow filename | `publish.yml` |
+
+No `NPM_TOKEN` repo secret is needed — the workflow uses `id-token: write`
+and npm mints short-lived publish tokens per run.
 
 Re-tagging the same version to re-run the workflow is fine — npm refuses to
 re-publish a version that's already out, so the publish step fails harmlessly
